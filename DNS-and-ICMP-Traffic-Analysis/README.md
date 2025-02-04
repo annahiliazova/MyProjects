@@ -19,7 +19,7 @@ The task is to analyze the packet capture data, identify the attack, and documen
 
 ## Files Included
 
-- `Cybersecurity-Incident-Report.md`: A markdown file containing the completed incident report, detailing the analysis and impact of the attack.
+- `Cybersecurity-Incident-Report.pdf`: A markdown file containing the completed incident report, detailing the analysis and impact of the attack.
 - `How-to-read-a-Wireshark-TCP_HTTP-log.pdf`: A PDF document explaining how to read and analyze TCP and HTTP traffic in Wireshark, with a focus on diagnosing issues like SYN floods and timeouts.
 
 ## Steps to Reproduce
