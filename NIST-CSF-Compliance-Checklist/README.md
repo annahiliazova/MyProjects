@@ -1,8 +1,4 @@
-## How to Use
-1. **Review the audit scope and goals**: Understand the context of the audit by reading `Botium Toys_Summary.pdf`.
-2. **Assess compliance**: Use the `Controls and compliance checklist.pdf` to check the status of existing controls and determine gaps in security practices.
-3. **Explore control categories**: Refer to `Control categories.pdf` to understand the classification of security controls.
-4. **Compare with industry standards**: Use the resources linked below to ensure you're meeting relevant compliance and regulatory requirements.
+# NIST CSF Compliance Checklist
 
 ## Overview
 Internal security audit for Botium Toys (fictional company) to assess compliance with:
@@ -19,17 +15,24 @@ Internal security audit for Botium Toys (fictional company) to assess compliance
 ## Methodology
 1. Reviewed scope, assets, and risk assessment report.
 2. Mapped controls to NIST CSF categories (Identify, Protect, Detect, Respond, Recover).
-3. Evaluated compliance with PCI DSS, GDPR, SOC 2 через checklist.
+3. Evaluated compliance with PCI DSS, GDPR, SOC 2 using a checklist.
 
 ## Key Findings
-- **Missing Controls**: 
-  - Intrusion Detection System (IDS)
-  - Encryption for credit card data
-  - Disaster recovery plans
-- **Compliance Risks**:
-  - GDPR: No breach notification plan.
-  - PCI DSS: Weak password policies.
- 
-  ## Resources
-- [NIST CSF Official Documentation](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.04162018.pdf)
-- [PCI DSS Quick Reference Guide](https://www.pcisecuritystandards.org/)
+### Missing Controls:
+- Intrusion Detection System (IDS)
+- Encryption for credit card data
+- Disaster recovery plans
+
+### Compliance Risks:
+- **GDPR**: No breach notification plan.
+- **PCI DSS**: Weak password policies.
+
+## Files Included
+- `Botium Toys_summary.pdf`: Scope, goals, and risk assessment report.
+- `Control categories.pdf`: List of control categories used in the audit.
+- `Controls and compliance checklist.pdf`: Completed checklist with findings.
+
+## Recommendations
+1. **Implement an Intrusion Detection System (IDS)** to monitor network traffic for suspicious activity.
+2. **Enforce encryption** for all sensitive data, especially credit card information.
+3. **Develop a disaster recovery plan** to ensure business continuity in case of a cyber incident.
