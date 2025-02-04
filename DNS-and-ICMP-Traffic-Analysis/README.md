@@ -1,50 +1,50 @@
 # Cybersecurity Incident Report: DNS and ICMP Traffic Analysis
 
-## Overview
+### Overview
 
-This project focuses on analyzing network traffic and diagnosing issues related to DNS and ICMP protocols using packet capture data from a network protocol analyzer tool (tcpdump). The incident involves a "destination port unreachable" error related to port 53, which is commonly used for DNS services, and the associated ICMP "port unreachable" error. 
+This project focuses on analyzing network traffic to diagnose issues caused by a **SYN flood attack**, which led to a **Denial of Service (DoS)** for a website. Using packet capture data from a network protocol analyzer (Wireshark), the investigation reveals how the SYN flood overwhelmed the server's resources, causing it to be unresponsive to legitimate requests.
 
-In this exercise, a cybersecurity analyst inspects network traffic to identify which protocol is causing the disruption. The result is documented in a comprehensive cybersecurity incident report.
+The incident involves a website that became unreachable due to the server being flooded with an excessive number of half-open TCP connections. The report documents the findings, explains the attack mechanism, and provides recommendations for mitigation.
 
-## Scenario
+### Scenario
 
-Several clients reported that they could not access the website `www.yummyrecipesforme.com`, seeing the error "destination port unreachable." After attempting to visit the website, the issue was confirmed, and the analysis began. Using a network analyzer tool (tcpdump), the following key points were found in the log:
+A website experienced significant downtime, with users encountering a connection timeout error. The issue was traced back to a SYN flood attack, where the attacker flooded the server with a large volume of SYN packets, overwhelming its ability to process legitimate requests.
 
-- **UDP packets** sent to the DNS server for IP address resolution (port 53).
-- **ICMP error responses**: "UDP port 53 unreachable," indicating a failure to reach the DNS server.
+Key points discovered from the packet capture data include:
+- **TCP SYN packets** sent from a single source IP address to the server.
+- **No ACK responses** received from the clients, indicating incomplete connections (half-open connections).
+- **Resource exhaustion** at the server, which led to a failure in handling legitimate user connections.
 
-The task is to analyze the packet data, identify the impacted network protocol, and write a report to explain the findings and propose possible solutions.
+The task is to analyze the packet data, identify the attack type, and explain how it disrupted the server's normal operation in a detailed cybersecurity incident report.
 
-## Files Included
+### Files Included
 
-- `Cybersecurity-Incident-Report.md`: A markdown file containing the completed incident report, detailing the analysis and suggested solutions.
-- `tcpdump-logs.txt`: A file containing the sample packet capture data for review and analysis.
+- `Cybersecurity-Incident-Report.md`: A markdown file containing the completed incident report, including analysis of the attack and the impact on the server.
+- `How-to-read-a-Wireshark-TCP_HTTP-log.pdf` : A PDF document that provides detailed instructions on how to read and interpret Wireshark logs, focusing on TCP and HTTP traffic analysis.
 
-## Steps to Reproduce
+### Steps to Reproduce
 
-1. **Load Network Analyzer**: Open the network analyzer tool (`tcpdump`) and begin capturing network traffic.
-2. **Generate Network Traffic**: Simulate browsing the website `www.yummyrecipesforme.com`, which triggers DNS queries to the DNS server.
-3. **Analyze Logs**: Review the tcpdump logs to identify UDP packets sent to the DNS server, along with the associated ICMP error messages indicating that port 53 is unreachable.
-4. **Document Findings**: Summarize the results in a cybersecurity incident report that includes analysis of the protocols used, error messages received, and suggested remediation steps.
+1. **Open Packet Capture in Wireshark**: Load the `wireshark-log.pcap` file into Wireshark for analysis.
+2. **Apply Filters**: Use the Wireshark filter `tcp.flags.syn == 1 && tcp.flags.ack == 0` to locate SYN packets that are part of the flood.
+3. **Analyze the Traffic**: Review the SYN packets to determine the source IP address, the volume of packets, and any signs of resource exhaustion on the server side.
+4. **Document Findings**: Write a cybersecurity incident report detailing the type of attack, its effect on the server, and potential mitigation strategies.
 
-## Incident Report
+### Incident Report
 
-### Section 1: Identify the type of attack that may have caused this network interruption
-The incident is caused by a failure to reach the DNS server at port 53. Analyzing the tcpdump log and the associated ICMP error messages, the issue appears to stem from a disruption in DNS communication due to unreachable port 53. The analysis suggests that this may have been caused by a misconfiguration or network-level issue rather than a typical cyber attack.
+#### Section 1: Identify the type of attack that may have caused this network interruption
 
-### Section 2: Explain how the attack is causing the website to malfunction
-The failure to resolve the domain name into an IP address causes the website to be inaccessible. The underlying issue is the "UDP port 53 unreachable" ICMP error, which signifies that the DNS server could not be reached due to the port being unavailable.
+The network disruption was caused by a **SYN flood attack**. The attacker sent a large number of SYN packets to the server without completing the TCP handshake. This resulted in the server's resources being exhausted as it tried to establish connections, preventing it from handling legitimate requests.
 
-## Tools and Technologies Used
+#### Section 2: Explain how the attack is causing the website to malfunction
 
-- **Network Protocol Analyzer**: tcpdump
-- **Protocols Analyzed**: DNS (UDP), ICMP
+The server's inability to complete the three-way TCP handshake due to an overwhelming number of incoming SYN packets caused it to become unresponsive. As a result, legitimate users were unable to establish a connection, leading to the timeout errors they encountered. The attack effectively consumed server resources, blocking access to the website.
+
+### Tools and Technologies Used
+
+- **Network Protocol Analyzer**: Wireshark
+- **Protocols Analyzed**: TCP (SYN flood)
 - **Data Format**: Packet Capture (PCAP)
-  
-## Conclusion
 
-This report outlines the process of analyzing a network issue involving DNS and ICMP traffic. The problem was identified as an unreachable DNS port, and possible solutions were discussed, including verifying DNS server configurations and troubleshooting network paths to ensure proper communication with DNS servers.
+### Conclusion
 
-## Future Work
-
-Further investigation may involve verifying firewall settings, examining server logs, and checking for external factors that may have caused the disruption of DNS services.
+This report provides an in-depth analysis of a **SYN flood attack** and its impact on the server's ability to process connections. The investigation showed that the server became overwhelmed by a large number of incomplete TCP handshakes, preventing normal operations and causing a Denial of Service. Possible mitigation strategies, such as SYN cookies or rate-limiting incoming connections, are discussed in the report.
