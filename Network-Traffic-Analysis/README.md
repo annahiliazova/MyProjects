@@ -1,50 +1,38 @@
-# Report: Network Traffic Analysis
+# Network Traffic Analysis: Cybersecurity Incident Report  
 
-## Overview
-This project contains materials completed as part of a course on network traffic analysis and incident investigation. Specifically, it includes an analysis of an attack on a web server conducted via a **SYN flood (DoS attack)** and a guide on reading **Wireshark logs**.
+## Overview  
 
-The project includes:
-- **Cybersecurity Incident Report: Network Traffic Analysis** – a completed example of an incident report.
-- **How to Read Wireshark TCP/HTTP Log** – a guide explaining how to interpret Wireshark network traffic logs.
+This project involves analyzing network traffic to investigate a cybersecurity incident affecting DNS and ICMP protocols. The investigation focuses on identifying issues that prevented users from accessing the website **yummyrecipesforme.com**.  
 
-## Task Description
-The task involved:
-1. Analyzing a scenario where a company's client faced difficulties accessing a website due to an attack.
-2. Identifying the type of attack (SYN flood DoS attack) and its impact on the web server.
-3. Using data obtained via Wireshark to compile an incident report.
-4. Answering key questions:
-   - What types of network attacks do you know, and how do they differ?
-   - What is the difference between a DoS and a DDoS attack?
-   - Why is the website unresponsive and showing a timeout error?
+## Incident Summary  
 
-A detailed task description is included in the provided materials.
+A network traffic analysis using \`tcpdump\` revealed an issue with **DNS and ICMP protocols**. The **DNS server on port 53** was found to be **unreachable**, which prevented domain name resolution. The log analysis showed repeated **ICMP error messages** stating **"udp port 53 unreachable"**, indicating a failure in the DNS query process.  
 
-## Project Contents
-- **Cybersecurity Incident Report: Network Traffic Analysis.pdf**  
-  *A completed report describing the incident, its analysis, and the root cause of the problem. The report includes:*
-  - Problem summary.
-  - Analysis of network log data.
-  - Conclusions and recommendations for preventing similar incidents.
+### Key Findings:  
+- The website **yummyrecipesforme.com** was inaccessible to users.  
+- **ICMP error messages** indicated that UDP port **53 was unreachable**.  
+- The **DNS service failure** suggests a possible **Denial of Service (DoS) attack** affecting port 53.  
 
-- **How to Read Wireshark TCP HTTP Log.pdf**  
-  *A guide explaining how to read and interpret Wireshark logs. It covers:*
-  - Log structure (entry numbers, timestamps, source and destination IP addresses, protocol details).
-  - Examples of normal traffic vs. attack traffic (SYN flood).
-  - Color-coded packet highlighting to distinguish normal traffic from attacks.
+## TCPDump Log Analysis  
 
-## How to Use the Materials
-1. **To understand the incident:**  
-   Open `Cybersecurity Incident Report: Network Traffic Analysis.pdf` to review a fully completed incident report. It provides a detailed analysis of the attack, log data interpretation, and its impact on the web server.
+Example log entries from \`tcpdump\` confirm the issue:  
 
-2. **To learn network traffic analysis methods:**  
-   The `How to Read Wireshark TCP HTTP Log.pdf` file will help you understand how to read logs and identify signs of network attacks. This material is useful for understanding TCP traffic behavior and the specifics of SYN flood attacks.
+\`\`\`
+13:24:32.192571 IP 192.51.100.15.52444 > 203.0.113.2.domain: 35084+ A? yummyrecipesforme.com. (24)  
+13:24:36.098564 IP 203.0.113.2 > 192.51.100.15: ICMP 203.0.113.2 udp port 53 unreachable length 254  
+13:26:32.192571 IP 192.51.100.15.52444 > 203.0.113.2.domain: 35084+ A? yummyrecipesforme.com. (24)  
+13:27:15.934126 IP 203.0.113.2 > 192.51.100.15: ICMP 203.0.113.2 udp port 53 unreachable length 320  
+\`\`\`  
 
-3. **For further use:**  
-   These materials can be used for educational purposes, to create your own reports, or as a reference for real-world incident analysis.
+These logs show repeated **failed DNS queries** followed by **ICMP error responses**, confirming that **port 53 was unresponsive**.  
 
-## Context & Scenario
-The scenario analyzed in this project:
-- A company receives reports about issues with its web server.
-- Using a packet sniffer (Wireshark), an unusual amount of TCP SYN requests from an unknown IP is detected.
-- The suspicion falls on a DoS attack (SYN flood), preventing the server from responding to legitimate traffic.
-- The report describes the steps taken to identify the problem, analyze it, and provide recommendations, including blocking the attacker's IP and improving network security.
+## Root Cause and Next Steps  
+
+The investigation suggests that a **Denial of Service (DoS) attack** may have targeted the **DNS server**, rendering port 53 unavailable.  
+
+### Recommended Actions:  
+1. **Monitor Network Traffic** – Use intrusion detection systems (IDS) to track unusual traffic patterns.  
+2. **Check DNS Server Logs** – Identify if the server was overloaded or experiencing malicious traffic.  
+3. **Implement Rate Limiting** – Prevent excessive requests to DNS services from overwhelming the system.  
+4. **Enable Firewall Rules** – Block malicious IP addresses and restrict unauthorized access.  
+5. **Contact Hosting Provider** – If the DNS server is externally hosted, notify the provider about the potential attack.  
