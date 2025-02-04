@@ -1,50 +1,64 @@
 # Cybersecurity Incident Report: DNS and ICMP Traffic Analysis
 
-### Overview
+## Overview
 
-This project focuses on analyzing network traffic to diagnose issues caused by a **SYN flood attack**, which led to a **Denial of Service (DoS)** for a website. Using packet capture data from a network protocol analyzer (Wireshark), the investigation reveals how the SYN flood overwhelmed the server's resources, causing it to be unresponsive to legitimate requests.
+This project focuses on analyzing network traffic to diagnose an attack on a web server. Specifically, it investigates a potential SYN flood attack, which is causing the server to become unresponsive and resulting in timeout errors when users attempt to access the website. The analysis uses packet capture data (PCAP) obtained via Wireshark and includes a detailed cybersecurity incident report explaining the findings and impact.
 
-The incident involves a website that became unreachable due to the server being flooded with an excessive number of half-open TCP connections. The report documents the findings, explains the attack mechanism, and provides recommendations for mitigation.
+The goal is to analyze network traffic to identify the attack type and understand how it disrupts the web server's functionality.
 
-### Scenario
+## Scenario
 
-A website experienced significant downtime, with users encountering a connection timeout error. The issue was traced back to a SYN flood attack, where the attacker flooded the server with a large volume of SYN packets, overwhelming its ability to process legitimate requests.
+The website `www.example.com` has been experiencing connectivity issues. Several clients have reported a "connection timeout" error, which indicates that the server is not responding to requests. After further investigation using network logs and Wireshark, it was determined that the root cause of the issue was a Denial of Service (DoS) attack, specifically a SYN flood.
 
-Key points discovered from the packet capture data include:
-- **TCP SYN packets** sent from a single source IP address to the server.
-- **No ACK responses** received from the clients, indicating incomplete connections (half-open connections).
-- **Resource exhaustion** at the server, which led to a failure in handling legitimate user connections.
+### Key Findings:
+- The logs show an excessive number of SYN requests sent to the server.
+- The server is unable to respond to legitimate requests due to resource exhaustion caused by the overwhelming SYN requests.
+- The connection timeout error occurs as the server fails to complete the TCP handshake with legitimate clients.
 
-The task is to analyze the packet data, identify the attack type, and explain how it disrupted the server's normal operation in a detailed cybersecurity incident report.
+The task is to analyze the packet capture data, identify the attack, and document the findings and recommendations in a cybersecurity incident report.
 
-### Files Included
+## Files Included
 
-- `Cybersecurity-Incident-Report.md`: A markdown file containing the completed incident report, including analysis of the attack and the impact on the server.
-- `How-to-read-a-Wireshark-TCP_HTTP-log.pdf` : A PDF document that provides detailed instructions on how to read and interpret Wireshark logs, focusing on TCP and HTTP traffic analysis.
+- `Cybersecurity-Incident-Report.md`: A markdown file containing the completed incident report, detailing the analysis and impact of the attack.
+- `How-to-read-a-Wireshark-TCP_HTTP-log.pdf`: A PDF document explaining how to read and analyze TCP and HTTP traffic in Wireshark, with a focus on diagnosing issues like SYN floods and timeouts.
 
-### Steps to Reproduce
+## Steps to Reproduce
 
-1. **Open Packet Capture in Wireshark**: Load the `wireshark-log.pcap` file into Wireshark for analysis.
-2. **Apply Filters**: Use the Wireshark filter `tcp.flags.syn == 1 && tcp.flags.ack == 0` to locate SYN packets that are part of the flood.
-3. **Analyze the Traffic**: Review the SYN packets to determine the source IP address, the volume of packets, and any signs of resource exhaustion on the server side.
-4. **Document Findings**: Write a cybersecurity incident report detailing the type of attack, its effect on the server, and potential mitigation strategies.
+1. **Load Network Analyzer**: Open the packet capture file in Wireshark.
+2. **Inspect the TCP Traffic**: Look for SYN packets that do not complete the handshake and examine the source IPs that are sending them.
+3. **Analyze the Logs**: Review the capture to identify patterns of SYN flood behavior, including failed TCP handshakes and timeouts.
+4. **Write the Report**: Document your findings in the cybersecurity incident report, detailing the analysis of the logs and the impact on the server.
 
-### Incident Report
+## Incident Report
 
-#### Section 1: Identify the type of attack that may have caused this network interruption
+### Section 1: Identify the Type of Attack
 
-The network disruption was caused by a **SYN flood attack**. The attacker sent a large number of SYN packets to the server without completing the TCP handshake. This resulted in the server's resources being exhausted as it tried to establish connections, preventing it from handling legitimate requests.
+The incident is caused by a SYN flood attack. A SYN flood is a type of DoS (Denial of Service) attack where an attacker sends a large number of SYN packets to a target server with the intention of consuming server resources. Each SYN request is part of the TCP handshake process, but in a SYN flood, the attacker does not complete the handshake, leaving the server with half-open connections.
 
-#### Section 2: Explain how the attack is causing the website to malfunction
+In this case, the server becomes overwhelmed with these half-open connections and can no longer respond to legitimate requests, resulting in a timeout error for users trying to connect to the website.
 
-The server's inability to complete the three-way TCP handshake due to an overwhelming number of incoming SYN packets caused it to become unresponsive. As a result, legitimate users were unable to establish a connection, leading to the timeout errors they encountered. The attack effectively consumed server resources, blocking access to the website.
+### Section 2: Explain How the Attack Is Causing the Website to Malfunction
 
-### Tools and Technologies Used
+TCP connections require a three-step handshake to establish a session between the client and server:
+1. The client sends a SYN request to the server.
+2. The server replies with a SYN-ACK response.
+3. The client acknowledges the server's SYN-ACK with an ACK message.
 
-- **Network Protocol Analyzer**: Wireshark
-- **Protocols Analyzed**: TCP (SYN flood)
+In a SYN flood, the attacker sends numerous SYN requests without responding to the server's SYN-ACK. As a result, the server's resources are tied up with these incomplete connections. Once the server runs out of resources, it becomes unresponsive, and legitimate users attempting to access the website experience timeout errors.
+
+The network logs show that the server's capacity is exceeded, preventing the completion of normal connections, and leading to service disruptions for users.
+
+## Tools and Technologies Used
+
+- **Wireshark**: A network protocol analyzer used to capture and inspect network traffic.
+- **Protocols Analyzed**: TCP, HTTP
 - **Data Format**: Packet Capture (PCAP)
+  
+## Conclusion
 
-### Conclusion
+This project involved analyzing network traffic to identify the cause of a website's connectivity issue. The issue was traced to a SYN flood attack that overwhelmed the server and caused it to stop responding to legitimate requests. Based on the findings, it is clear that the attack resulted in a denial of service, which prevented normal web operations.
 
-This report provides an in-depth analysis of a **SYN flood attack** and its impact on the server's ability to process connections. The investigation showed that the server became overwhelmed by a large number of incomplete TCP handshakes, preventing normal operations and causing a Denial of Service. Possible mitigation strategies, such as SYN cookies or rate-limiting incoming connections, are discussed in the report.
+### Recommended Next Steps:
+- **Mitigate the Attack**: Implement rate-limiting on the server to limit the number of incoming SYN requests.
+- **Deploy SYN Cookies**: Configure SYN cookies to protect against SYN flood attacks by ensuring that incomplete connections do not consume excessive resources.
+- **Enhance Network Security**: Monitor network traffic for unusual patterns and investigate the possibility of blocking malicious IP addresses that are involved in the attack.
