@@ -1,7 +1,7 @@
 # Hello, I'm Anna, a junior cybersecurity specialist (SOC / Blue Team).
 
 Bachelor's degree in cybersecurity.  
-Goal: Junior SOC Analyst / Security Analyst / Incident Response 
+Goal: Junior SOC Analyst / Security Analyst / Incident Response
 Email: gilyazovaanna@gmail.com
 LinkedIn: https://www.linkedin.com/in/anna-hiliazova/
 
