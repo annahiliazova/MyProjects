@@ -45,7 +45,7 @@ A modern, cross-platform desktop weather application built with Python and PyQt5
 ## File Structure
 ``` 
 weather-app/
-├── main.py              # Main application file
+├── weather_app.py              # Main application file
 ├── .env                 # Environment variables (create this)
 ├── icon.png             # Application icon (optional)
 ├── sun.png              # Sun icon (optional)
@@ -75,7 +75,7 @@ weather-app/
 
 1. **Run the application**:
    ```bash
-   python main.py
+   python weather_app.py
    ```
 
 2. **Enter a city name** in the text field
