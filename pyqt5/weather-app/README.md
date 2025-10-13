@@ -40,42 +40,42 @@ A modern, cross-platform desktop weather application built with Python and PyQt5
    ```env
    OPENWEATHER_API_KEY=your_api_key_here
    ```
-> **Never commit your .env file to version control!** It�s already excluded via .gitignore
+> **Never commit your .env file to version control!** It’s already excluded via .gitignore
 
 ## File Structure
 ``` 
 weather-app/
-??? main.py              # Main application file
-??? .env                 # Environment variables (create this)
-??? icon.png             # Application icon (optional)
-??? sun.png              # Sun icon (optional)
-??? icons/               # Weather icons directory
-?   ??? clear.png
-?   ??? cloud.png
-?   ??? rain.png
-?   ??? snow.png
-?   ??? thunderstorm.png
-?   ??? mist.png
-?   ??? dust.png
-?   ??? volcano.png
-?   ??? tornado.png
-?   ??? unknown.png
-??? directions/          # Wind direction icons
-    ??? n.png
-    ??? ne.png
-    ??? e.png
-    ??? se.png
-    ??? s.png
-    ??? sw.png
-    ??? w.png
-    ??? nw.png
+├── weather_app.py              # Main application file
+├── .env                 # Environment variables (create this)
+├── icon.png             # Application icon (optional)
+├── sun.png              # Sun icon (optional)
+├── icons/               # Weather icons directory
+│   ├── clear.png
+│   ├── cloud.png
+│   ├── rain.png
+│   ├── snow.png
+│   ├── thunderstorm.png
+│   ├── mist.png
+│   ├── dust.png
+│   ├── volcano.png
+│   ├── tornado.png
+│   └── unknown.png
+└── directions/          # Wind direction icons
+    ├── n.png
+    ├── ne.png
+    ├── e.png
+    ├── se.png
+    ├── s.png
+    ├── sw.png
+    ├── w.png
+    └── nw.png
 ```
 
 ## Usage
 
 1. **Run the application**:
    ```bash
-   python main.py
+   python weather_app.py
    ```
 
 2. **Enter a city name** in the text field
