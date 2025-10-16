@@ -1,25 +1,31 @@
 import sys
 import requests
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
-                             QPushButton, QVBoxLayout, QHBoxLayout)
+                             QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
 import random
 
+
 BASE_URL = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champions/"
-SUMMARY_URL = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json"
-html = f"""
-<html>
-<body style="margin:0; padding:0; background:black; display:flex; justify-content:center; align-items:center; width:100%; height:100%;">
-    <video autoplay muted playsinline loop style="height:100%; width:100%; object-fit:cover; background:black;">
-        <source src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0777/ability_0777_W1.webm" type="video/webm">
-        Your browser does not support the video tag.
-    </video>
+SUMMARY_URL = ("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/"
+               "global/default/v1/champion-summary.json")
+html = """
+<body style="margin:0;padding:0;background:black">
+  <video autoplay muted playsinline loop style="width:100%;height:100%;object-fit:cover"
+         src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0777/ability_0777_W1.webm"></video>
 </body>
-</html>
 """
+
+
+def cdn_url(path: str) -> str:
+    if not path:
+        return ""
+    clean = path.replace("/lol-game-data/assets/", "plugins/rcp-be-lol-game-data/global/default/").lower()
+    return f"https://raw.communitydragon.org/latest/{clean}"
+
 
 class ChampionLookupApp(QWidget):
     def __init__(self):
@@ -30,8 +36,7 @@ class ChampionLookupApp(QWidget):
         self.champion_image_label = QLabel("Champion\nImage")
         self.name_role_difficulty_label = QLabel()
         self.description_label = QLabel()
-        self.abilities_label = QLabel("Abilities")
-        self.video_label = QLabel()
+        self.abilities_header = QLabel("Abilities")
         self.web_view = QWebEngineView()
 
         self.ability_labels = []
@@ -54,10 +59,9 @@ class ChampionLookupApp(QWidget):
         self.random_button.clicked.connect(self.surprise)
 
     def create_ability_widgets(self):
-        for ability_name in self.ability_names:
+        for name in self.ability_names:
             label = QLabel()
-            button = QPushButton(ability_name)
-
+            button = QPushButton(name)
             self.ability_labels.append(label)
             self.ability_buttons.append(button)
 
@@ -70,13 +74,18 @@ class ChampionLookupApp(QWidget):
         border_color = "#d4af37"
         accent_color = "#e8e1d1"
 
-        # Устанавливаем object names для элементов
+        self.abilities_header.setObjectName("abilities_header")
+        self.champion_image_label.setObjectName("champion_image_label")
+        self.name_role_difficulty_label.setObjectName("name_role_difficulty_label")
+        self.description_label.setObjectName("description_label")
+        self.web_view.setObjectName("web_view")
         self.lookup_button.setObjectName("LookupButton")
         self.random_button.setObjectName("RandomButton")
-        for i, button in enumerate(self.ability_buttons):
-            button.setObjectName(f"AbilityButton_{i}")
+        for i, btn in enumerate(self.ability_buttons):
+            btn.setObjectName(f"AbilityButton_{i}")
+        for i, lbl in enumerate(self.ability_labels):
+            lbl.setObjectName(f"ability_label_{i}")
 
-        # Общий стиль приложения
         self.setStyleSheet(f"""
             QWidget {{
                 background-color: {bg_lighter};
@@ -118,11 +127,12 @@ class ChampionLookupApp(QWidget):
                 background-color: #7a6239;
             }}
 
-            QLabel[objectName="abilities_label"] {{
+            QLabel[objectName="abilities_header"] {{
                 color: {dark_gold};
                 font-size: 20px;
                 font-weight: bold;
-                padding: 10px 0;
+                padding: 0;
+                margin: 0;
                 border: none;
                 background-color: transparent;
             }}
@@ -158,7 +168,8 @@ class ChampionLookupApp(QWidget):
                 border-radius: 6px;
                 font-size: 16px;
                 font-weight: bold;
-                padding: 8px;
+                text-align: left;
+                padding-left: 10px;
             }}
 
             QPushButton[objectName^="AbilityButton_"]:hover {{
@@ -176,29 +187,18 @@ class ChampionLookupApp(QWidget):
             }}
         """)
 
-        # Устанавливаем object names для QLabel'ов
-        self.abilities_label.setObjectName("abilities_label")
-        self.champion_image_label.setObjectName("champion_image_label")
-        self.name_role_difficulty_label.setObjectName("name_role_difficulty_label")
-        self.description_label.setObjectName("description_label")
-        self.web_view.setObjectName("web_view")
-
-        for i, label in enumerate(self.ability_labels):
-            label.setObjectName(f"ability_label_{i}")
-
-        # Размеры элементов
-        self.champion_image_label.setFixedSize(244, 443)
+        self.champion_image_label.setFixedSize(193, 350)
         self.name_role_difficulty_label.setFixedHeight(80)
+        self.description_label.setFixedHeight(260)
         self.description_label.setWordWrap(True)
+        self.abilities_header.setFixedHeight(30)
 
         for label, button in zip(self.ability_labels, self.ability_buttons):
             label.setFixedSize(64, 64)
             label.setAlignment(Qt.AlignCenter)
-            button.setFixedSize(180, 64)
+            button.setFixedSize(350, 64)
 
-        self.web_view.setFixedHeight(320)
-
-        # Выравнивание текста
+        self.web_view.setFixedSize(480, 320)
         self.name_role_difficulty_label.setAlignment(Qt.AlignVCenter)
         self.description_label.setAlignment(Qt.AlignVCenter)
 
@@ -230,7 +230,7 @@ class ChampionLookupApp(QWidget):
         main_layout = QVBoxLayout()
         main_layout.addLayout(search_layout)
         main_layout.addLayout(card_layout)
-        main_layout.addWidget(self.abilities_label)
+        main_layout.addWidget(self.abilities_header)
         main_layout.addLayout(with_video_layout)
 
         self.setLayout(main_layout)
@@ -238,14 +238,16 @@ class ChampionLookupApp(QWidget):
     def surprise(self):
         try:
             champions = requests.get(SUMMARY_URL).json()
-            if champions:
-                random_champ = random.choice(champions)
-                if random_champ:
-                    self.name_input.setText(random_champ["name"])
-                    self.load_champion(random_champ["name"])
-            return None
-        except:
-            return None
+            champ = random.choice(champions)
+            self.name_input.setText(champ["name"])
+            self.load_champion(champ["name"])
+
+        except requests.exceptions.RequestException as e:
+            print(f"Network error in surprise: {e}")
+            self.show_error("Network error - check your connection")
+        except (ValueError, KeyError) as e:
+            print(f"Data parsing error in surprise: {e}")
+            self.show_error("Invalid data received from server")
 
     def on_search(self):
         name = self.name_input.text().strip()
@@ -256,49 +258,58 @@ class ChampionLookupApp(QWidget):
         try:
             champions = requests.get(SUMMARY_URL).json()
             champ_data = next((c for c in champions if c["name"].lower() == name.lower()), None)
-
             if not champ_data:
                 self.show_error(f"Champion '{name}' not found")
                 return
 
-            champ_url = f"{BASE_URL}{champ_data['id']}.json"
-            data = requests.get(champ_url).json()
-
+            data = requests.get(f"{BASE_URL}{champ_data['id']}.json").json()
             self.update_ui(data)
-
         except Exception as e:
             self.show_error(f"Error: {e}")
 
     def update_ui(self, data):
-        name = data["name"]
-        roles = ", ".join(role.capitalize() for role in data.get("roles", []))
+        roles = ", ".join(r.capitalize() for r in data.get("roles", []))
         difficulty = "⭐" * data["tacticalInfo"]["difficulty"]
-        display_text = f"{name} ◦ {roles} ◦ Difficulty: {difficulty}"
-
-        self.name_role_difficulty_label.setText(display_text)
+        self.name_role_difficulty_label.setText(f"{data['name']} ◦ {roles} ◦ Difficulty: {difficulty}")
         self.description_label.setText(data["shortBio"])
 
-        self.load_champion_image(data)
+        # Champion image
+        base_skin = next((s for s in data["skins"] if s.get("isBase")), None)
+        self.load_image_from_path(base_skin["loadScreenPath"] if base_skin else "", self.champion_image_label)
 
-    def load_champion_image(self, data):
-        for skin in data.get("skins", []):
-            if skin.get("isBase", False):
-                image_path = skin.get("loadScreenPath", "").replace(
-                    "/lol-game-data/assets/",
-                    "plugins/rcp-be-lol-game-data/global/default/"
-                ).lower()
-                image_url = f"https://raw.communitydragon.org/latest/{image_path}"
+        # Passive
+        passive = data["passive"]
+        self.ability_buttons[0].setText(f"Passive: {passive['name']}")
+        self.load_image_from_path(passive["abilityIconPath"], self.ability_labels[0])
 
-                try:
-                    response = requests.get(image_url, timeout=10)
-                    if response.status_code == 200:
-                        pixmap = QPixmap()
-                        pixmap.loadFromData(response.content)
-                        self.champion_image_label.setPixmap(pixmap.scaled(244, 443, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-                        return
-                except:
-                    self.champion_image_label.setText("No Image")
-        self.champion_image_label.setText("No Image")
+        # Spells Q-W-E-R
+        for i, spell in enumerate(data["spells"]):
+            key = spell["spellKey"].upper()
+            self.ability_buttons[i + 1].setText(f"{key}: {spell['name']}")
+            self.load_image_from_path(spell["abilityIconPath"], self.ability_labels[i + 1])
+
+    @staticmethod
+    def load_image_from_path(path, label):
+        url = cdn_url(path)
+        if not url:
+            label.setText("No Image")
+            return
+        try:
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                pixmap = QPixmap()
+                pixmap.loadFromData(response.content)
+                scaled_pixmap = pixmap.scaled(label.width(), label.height(),
+                                              Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                label.setPixmap(scaled_pixmap)
+            else:
+                label.setText("No Image")
+        except requests.exceptions.RequestException as e:
+            print(f"Image load failed: {e}")
+            label.setText("Load failed")
+        except Exception as e:
+            print(f"Unexpected image error: {e}")
+            label.setText("Error")
 
     def show_error(self, message):
         self.name_role_difficulty_label.setText("Error")
