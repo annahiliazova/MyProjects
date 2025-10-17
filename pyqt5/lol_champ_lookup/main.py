@@ -2,11 +2,12 @@ import sys
 import requests
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy)
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import QUrl
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 import random
+import json
 
 
 BASE_URL = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champions/"
@@ -43,6 +44,7 @@ class ChampionLookupApp(QWidget):
         self.ability_buttons = []
         self.ability_names = ["Passive", "Q", "W", "E", "R"]
 
+        self.net_manager = QNetworkAccessManager(self)
         self.init_ui()
 
     def init_ui(self):
@@ -275,41 +277,39 @@ class ChampionLookupApp(QWidget):
 
         # Champion image
         base_skin = next((s for s in data["skins"] if s.get("isBase")), None)
-        self.load_image_from_path(base_skin["loadScreenPath"] if base_skin else "", self.champion_image_label)
+        image_path = base_skin["loadScreenPath"] if base_skin else ""
+        self.load_image_from_url(cdn_url(image_path), self.champion_image_label)
 
         # Passive
         passive = data["passive"]
         self.ability_buttons[0].setText(f"Passive: {passive['name']}")
-        self.load_image_from_path(passive["abilityIconPath"], self.ability_labels[0])
+        self.load_image_from_url(cdn_url(passive["abilityIconPath"]), self.ability_labels[0])
 
         # Spells Q-W-E-R
         for i, spell in enumerate(data["spells"]):
             key = spell["spellKey"].upper()
             self.ability_buttons[i + 1].setText(f"{key}: {spell['name']}")
-            self.load_image_from_path(spell["abilityIconPath"], self.ability_labels[i + 1])
+            self.load_image_from_url(cdn_url(spell["abilityIconPath"]), self.ability_labels[i + 1])
 
-    @staticmethod
-    def load_image_from_path(path, label):
-        url = cdn_url(path)
+    def load_image_from_url(self, url: str, label: QLabel):
         if not url:
             label.setText("No Image")
             return
-        try:
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                pixmap = QPixmap()
-                pixmap.loadFromData(response.content)
-                scaled_pixmap = pixmap.scaled(label.width(), label.height(),
-                                              Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                label.setPixmap(scaled_pixmap)
-            else:
-                label.setText("No Image")
-        except requests.exceptions.RequestException as e:
-            print(f"Image load failed: {e}")
+        request = QNetworkRequest(QUrl(url))
+        reply = self.net_manager.get(request)
+        reply.finished.connect(lambda: self._on_image_loaded(reply, label))
+
+    def _on_image_loaded(self, reply, label: QLabel):
+        if reply.error():
             label.setText("Load failed")
-        except Exception as e:
-            print(f"Unexpected image error: {e}")
-            label.setText("Error")
+        else:
+            data = reply.readAll()
+            pixmap = QPixmap()
+            pixmap.loadFromData(data)
+            scaled_pixmap = pixmap.scaled(label.width(), label.height(),
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            label.setPixmap(scaled_pixmap)
+        reply.deleteLater()
 
     def show_error(self, message):
         self.name_role_difficulty_label.setText("Error")
